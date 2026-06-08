@@ -1,6 +1,7 @@
 from flask import Flask
 from app.extensions import db, jwt
 from app.routes.auth_routes import auth_bp
+from app.routes.product_routes import product_bp
 
 
 def create_app():
@@ -14,10 +15,6 @@ def create_app():
     db.init_app(app)
     jwt.init_app(app)
 
-    from app.routes.health_routes import health_bp
-    from app.routes.ping_routes import ping_bp
-
-    app.register_blueprint(health_bp)
-    app.register_blueprint(ping_bp)
+    app.register_blueprint(product_bp)
 
     return app
