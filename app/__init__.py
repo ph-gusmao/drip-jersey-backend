@@ -11,10 +11,9 @@ def create_app():
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config["JWT_SECRET_KEY"] = "super_secret_key"
     app.register_blueprint(auth_bp, url_prefix="/auth")
+    app.register_blueprint(product_bp)
 
     db.init_app(app)
     jwt.init_app(app)
-
-    app.register_blueprint(product_bp)
 
     return app

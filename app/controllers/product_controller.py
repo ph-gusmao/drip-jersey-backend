@@ -9,10 +9,14 @@ from app.services.product_service import (
 from flask_jwt_extended import jwt_required
 
 
+@jwt_required()
 def create():
     data = request.json
 
-    product = create_product(data["name"], data["price"], data.get["stock", 0])
+    product = create_product(data["name"], data["price"], data["stock"])
+
+    if not data:
+        return jsonify({"error": "Dados obrigatórios"}), 400
 
     return (
         jsonify(
@@ -37,10 +41,31 @@ def list_products():
     )
 
 
+def list_product_by_id(product_id):
+
+    product = get_product_by_id(product_id)
+
+    if not product:
+        return jsonify({"error": "Este produto não existe"}), 404
+
+    return (
+        jsonify(
+            {
+                "id": product.id,
+                "name": product.name,
+                "price": product.price,
+                "stock": product.stock,
+            }
+        ),
+        200,
+    )
+
+
 def create_protected():
     return create()
 
 
+@jwt_required()
 def update(product_id):
     product = get_product_by_id(product_id)
 
@@ -49,9 +74,10 @@ def update(product_id):
 
     updated = update_product(product, request.json)
 
-    return {"id": updated.id, "name": updated.name}
+    return jsonify({"id": updated.id, "name": updated.name}), 200
 
 
+@jwt_required()
 def delete(product_id):
     product = get_product_by_id(product_id)
 
@@ -60,4 +86,4 @@ def delete(product_id):
 
     delete_product(product)
 
-    return {"msg": "Producot deletado"}
+    return {"msg": "Produto deletado"}

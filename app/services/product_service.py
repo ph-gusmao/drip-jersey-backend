@@ -14,7 +14,7 @@ def get_all_products():
 
 
 def get_product_by_id(product_id):
-    return Product.query.get(product_id)
+    return db.session.get(Product, product_id)
 
 
 def update_product(product, data):
