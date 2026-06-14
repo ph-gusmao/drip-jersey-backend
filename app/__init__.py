@@ -3,7 +3,10 @@ from app.extensions import db, jwt
 from app.routes.auth_routes import auth_bp
 from app.routes.product_routes import product_bp
 from datetime import timedelta, datetime
+from dotenv import load_dotenv
 import time, os
+
+load_dotenv()
 
 
 def create_app():
@@ -23,6 +26,8 @@ def create_app():
     @app.before_request
     def log_request():
 
+        g.start_time = time.time()
+
         current_time = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 
         print(f"[{current_time}] {request.method} {request.path}")
@@ -30,7 +35,11 @@ def create_app():
     @app.after_request
     def log_response(response):
 
-        print(f"[RESPONSE] Status: {response.status_code}")
+        execution_time = time.time() - g.start_time
+
+        print(f"[RESPONSE] Status: " f"{response.status_code}")
+
+        print(f"[TIME] " f"{execution_time: .4f} segundos")
 
         return response
 
