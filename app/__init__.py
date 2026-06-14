@@ -1,5 +1,5 @@
 from flask import Flask, request, g
-from app.extensions import db, jwt
+from app.extensions import db, jwt, migrate
 from app.routes.auth_routes import auth_bp
 from app.routes.product_routes import product_bp
 from datetime import timedelta, datetime
@@ -22,6 +22,7 @@ def create_app():
 
     db.init_app(app)
     jwt.init_app(app)
+    migrate.init_app(app, db)
 
     @app.before_request
     def log_request():
