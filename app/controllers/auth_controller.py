@@ -13,7 +13,7 @@ def register():
     data = request.json
 
     try:
-        user = create_user(data["username"], data["password"])
+        user = create_user(data["username"], data["password"], data.get("role", "USER"))
         return jsonify({"msg": "Usuário criado", "id": user.id}), 201
     except Exception as e:
         return jsonify({"error": str(e)}), 400
@@ -46,6 +46,7 @@ def profile():
         "id": user.id,
         "username": user.username,
         "message": "Usuário autenticado com sucesso",
+        "role": user.role,
     }
 
 

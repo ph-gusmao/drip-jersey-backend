@@ -7,9 +7,11 @@ from app.services.product_service import (
     delete_product,
 )
 from flask_jwt_extended import jwt_required
+from app.decorators.admin_required import admin_required
 
 
 @jwt_required()
+@admin_required()
 def create():
     data = request.json
 
@@ -41,6 +43,7 @@ def list_products():
     )
 
 
+@admin_required()
 def list_product_by_id(product_id):
 
     product = get_product_by_id(product_id)
@@ -66,6 +69,7 @@ def create_protected():
 
 
 @jwt_required()
+@admin_required()
 def update(product_id):
     product = get_product_by_id(product_id)
 
@@ -78,6 +82,7 @@ def update(product_id):
 
 
 @jwt_required()
+@admin_required()
 def delete(product_id):
     product = get_product_by_id(product_id)
 

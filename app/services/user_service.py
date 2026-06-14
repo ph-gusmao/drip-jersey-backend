@@ -3,7 +3,7 @@ from app.extensions import db
 import bcrypt
 
 
-def create_user(username, password):
+def create_user(username, password, role="USER"):
     existing_user = User.query.filter_by(username=username).first()
 
     if existing_user:
@@ -13,7 +13,7 @@ def create_user(username, password):
     password_bytes = str(password).encode("utf-8")
     hashed = bcrypt.hashpw(password_bytes, bcrypt.gensalt())
 
-    user = User(username=username, password=hashed.decode("utf-8"))
+    user = User(username=username, password=hashed.decode("utf-8"), role=role)
 
     db.session.add(user)
     db.session.commit()
