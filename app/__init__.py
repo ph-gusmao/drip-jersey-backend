@@ -5,6 +5,7 @@ from app.routes.product_routes import product_bp
 from datetime import timedelta, datetime
 from dotenv import load_dotenv
 import time, os
+from app.errors.handlers import register_error_handlers
 
 load_dotenv()
 
@@ -24,6 +25,8 @@ def create_app():
     jwt.init_app(app)
     migrate.init_app(app, db)
 
+    register_error_handlers(app)
+
     @app.before_request
     def log_request():
 
@@ -40,7 +43,7 @@ def create_app():
 
         print(f"[RESPONSE] Status: " f"{response.status_code}")
 
-        print(f"[TIME] " f"{execution_time: .4f} segundos")
+        print(f"[TIME] {execution_time: .4f} segundos")
 
         return response
 

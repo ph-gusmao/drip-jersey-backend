@@ -7,6 +7,7 @@ from flask_jwt_extended import (
     create_refresh_token,
 )
 from app.models.user_model import User
+from app.errors.exceptions import UnauthorizedError
 
 
 def register():
@@ -25,7 +26,7 @@ def login():
     user = authenticate_user(data["username"], data["password"])
 
     if not user:
-        return jsonify({"msg": "Credenciais inválidas"}), 401
+        raise UnauthorizedError("Credenciais inválidas")
 
     access_token = create_access_token(identity=str(user.id))
     refresh_token = create_refresh_token(identity=str(user.id))

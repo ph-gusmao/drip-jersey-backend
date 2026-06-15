@@ -8,6 +8,7 @@ from app.services.product_service import (
 )
 from flask_jwt_extended import jwt_required
 from app.decorators.admin_required import admin_required
+from app.errors.exceptions import NotFoundError, UnauthorizedError, BadRequestError
 
 
 @jwt_required()
@@ -15,10 +16,10 @@ from app.decorators.admin_required import admin_required
 def create():
     data = request.json
 
-    product = create_product(data["name"], data["price"], data["stock"])
-
     if not data:
-        return jsonify({"error": "Dados obrigatórios"}), 400
+        raise BadRequestError("Dados obrigatórios")
+
+    product = create_product(data["name"], data["price"], data["stock"])
 
     return (
         jsonify(
@@ -43,13 +44,12 @@ def list_products():
     )
 
 
-@admin_required()
 def list_product_by_id(product_id):
 
     product = get_product_by_id(product_id)
 
     if not product:
-        return jsonify({"error": "Este produto não existe"}), 404
+        raise NotFoundError("Produto não encontrado")
 
     return (
         jsonify(
@@ -74,7 +74,7 @@ def update(product_id):
     product = get_product_by_id(product_id)
 
     if not product:
-        return {"msg": "Produto não encontrado"}, 404
+        raise NotFoundError("Produto não encontrado")
 
     updated = update_product(product, request.json)
 
@@ -87,7 +87,7 @@ def delete(product_id):
     product = get_product_by_id(product_id)
 
     if not product:
-        return {"mesg": "Produto não encontrado"}, 404
+        raise NotFoundError("Produto não encontrado")
 
     delete_product(product)
 
