@@ -7,12 +7,15 @@ from dotenv import load_dotenv
 import time
 from app.errors.handlers import register_error_handlers
 from app.config import DevelopmentConfig
+from app.loggin_config import configure_loggin
 
 load_dotenv()
 
 
 def create_app():
     app = Flask(__name__)
+
+    logger = configure_loggin()
 
     app.config.from_object(DevelopmentConfig)
 
@@ -32,16 +35,16 @@ def create_app():
 
         current_time = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 
-        print(f"[{current_time}] {request.method} {request.path}")
+        logger.info(f"{request.method} {request.path}")
 
     @app.after_request
     def log_response(response):
 
         execution_time = time.time() - g.start_time
 
-        print(f"[RESPONSE] Status: " f"{response.status_code}")
+        logger.info(f"Status: {response.status_code}")
 
-        print(f"[TIME] {execution_time:.4f} segundos")
+        logger.info(f"Execution Time: " f"{execution_time:.4f}s")
 
         return response
 
