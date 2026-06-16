@@ -8,16 +8,23 @@ import time
 from app.errors.handlers import register_error_handlers
 from app.config import DevelopmentConfig
 from app.loggin_config import configure_loggin
+import os
 
 load_dotenv()
 
 
 def create_app():
+
+    print("JWT_SECRET_KEY:", os.getenv("JWT_SECRET_KEY"))
     app = Flask(__name__)
 
     logger = configure_loggin()
 
     app.config.from_object(DevelopmentConfig)
+
+    app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
+
+    print("APP CONFIG JWT:", app.config.get("JWT_SECRET_KEY"))
 
     app.register_blueprint(auth_bp, url_prefix="/auth")
     app.register_blueprint(product_bp)
