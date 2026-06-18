@@ -68,3 +68,32 @@ def test_profile_invalid_token(client):
     )
 
     assert response.status_code in [401, 422]
+
+
+def test_refresh_token(client):
+
+    username = f"teste_refresh_{uuid.uuid4()}"
+
+    client.post("/auth/register", json={"username": username, "password": "12345"})
+
+    login_response = client.post(
+        "/auth/login", json={"username": username, "password": "12345"}
+    )
+
+    assert login_response.status_code == 200
+
+    data = login_response.get_json()
+
+    assert "refresh_token" in data
+
+    refresh_token = data["refresh_token"]
+
+    response = client.post(
+        "/auth/refresh", headers={"Authorization": f"Bearer {refresh_token}"}
+    )
+
+    data = response.get_json()
+
+    assert response.status_code == 200
+
+    assert "access_token" in data
