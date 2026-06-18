@@ -34,14 +34,17 @@ def test_profile(client):
 
     username = f"teste_{uuid.uuid4()}"
 
+    # Registro
     client.post("/auth/register", json={"username": username, "password": "12345"})
 
+    # Login
     login_response = client.post(
         "/auth/login", json={"username": username, "password": "12345"}
     )
 
     token = login_response.get_json()["access_token"]
 
+    # Requisição autenticada
     response = client.get("/auth/profile", headers={"Authorization": f"Bearer {token}"})
 
     data = response.get_json()
@@ -49,3 +52,19 @@ def test_profile(client):
     assert response.status_code == 200
 
     assert data["username"] == username
+
+
+def test_profile_without_token(client):
+
+    response = client.get("/auth/profile")
+
+    assert response.status_code == 401
+
+
+def test_profile_invalid_token(client):
+
+    response = client.get(
+        "/auth/profile", headers={"Authorization": "Bearer token_fake"}
+    )
+
+    assert response.status_code in [401, 422]

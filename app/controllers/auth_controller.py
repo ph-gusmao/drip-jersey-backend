@@ -8,6 +8,7 @@ from flask_jwt_extended import (
 )
 from app.models.user_model import User
 from app.errors.exceptions import UnauthorizedError
+from app.extensions import db
 
 
 def register():
@@ -38,7 +39,7 @@ def login():
 def profile():
     user_id = int(get_jwt_identity())
 
-    user = User.query.get(user_id)
+    user = db.session.get(User, user_id)
 
     if not user:
         return {"msg": "Usuário não encontrado"}, 404
