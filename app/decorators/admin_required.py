@@ -15,7 +15,7 @@ def admin_required():
 
             user_id = int(get_jwt_identity())
 
-            user = db.session.fet(User, user_id)
+            user = db.session.get(User, user_id)
 
             if not user:
 
