@@ -26,10 +26,8 @@ def test_user_cannot_create_product(client):
         json={"name": "Camisa Barcelona", "price": 99.99, "stock": 10},
         headers={"Authorization": f"Bearer {token}"},
     )
-    print(response.status_code)
-    print(response.get_json())
 
-    # assert response.status_code == 403
+    assert response.status_code == 403
 
 
 def test_admin_can_create_product(client):
