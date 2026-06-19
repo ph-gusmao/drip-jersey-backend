@@ -7,6 +7,8 @@ from app.errors.exceptions import (
     UnauthorizedError,
 )
 
+from marshmallow import ValidationError
+
 from werkzeug.exceptions import HTTPException
 
 
@@ -31,6 +33,11 @@ def register_error_handlers(app):
     def handle_forbidden(error):
 
         return jsonify({"error": str(error)}), 403
+
+    @app.errorhandler(ValidationError)
+    def handler_validation_error(error):
+
+        return jsonify({"errors": error.messages}), 400
 
     @app.errorhandler(HTTPException)
     def handle_http_exception(error):

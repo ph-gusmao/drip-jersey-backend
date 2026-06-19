@@ -20,9 +20,6 @@ def create():
 
     data = schema.load(request.json)
 
-    if not data:
-        raise BadRequestError("Dados obrigatórios")
-
     product = create_product(data["name"], data["price"], data["stock"])
 
     return (

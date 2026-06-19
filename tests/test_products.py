@@ -216,3 +216,20 @@ def test_login_wrong_password(client):
     )
 
     assert response.status_code == 401
+
+
+def test_create_product_invalid_price(client):
+
+    token = create_user_and_login(client, role="ADMIN")
+
+    response = client.post(
+        "/products",
+        json={"name": "Camisa Teste", "price": "abc", "stock": 10},
+        headers={"Authorization": f"Bearer {token}"},
+    )
+
+    assert response.status_code == 400
+
+    data = response.get_json()
+
+    assert "errors" in data
