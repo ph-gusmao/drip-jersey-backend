@@ -1,13 +1,10 @@
 from marshmallow import Schema, fields
-from marshmallow.validate import Length, Email
+from marshmallow.validate import Length, Email, OneOf
 
 
-class RegisterSchema(Schema):
+class AdminUserSchema(Schema):
 
-    username = fields.String(required=True, validate=Length(min=3, max=80))
-
-    password = fields.String(required=True, validate=Length(min=6))
-
-    email = fields.Email(required=True)
-
-    role = fields.String(required=True)
+    role = fields.String(
+        required=True,
+        validate=OneOf(["ADMIN"], ["USER"], error="Role deve ser ADMIN ou USER"),
+    )

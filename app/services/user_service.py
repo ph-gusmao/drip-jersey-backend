@@ -1,6 +1,7 @@
 from app.models.user_model import User
 from app.extensions import db
 import bcrypt
+from app.errors.exceptions import NotFoundError
 
 
 def create_user(username, password, role="USER"):
@@ -34,3 +35,37 @@ def authenticate_user(username, password):
         return user
 
     return None
+
+
+def get_all_users():
+    return User.query, all()
+
+
+def get_user_by_id(user_id):
+
+    user = db.session.get(User, user_id)
+
+    if not user:
+        raise NotFoundError("Usuário não encontrado")
+
+    return user
+
+
+def update_user_role(user_id, role):
+
+    user = get_user_by_id(user_id)
+
+    user.role = role
+
+    db.session.commit()
+
+    return user
+
+
+def delete_user(user_id):
+
+    user = get_user_by_id(user_id)
+
+    db.session.delete(user)
+
+    db.session.commit()
