@@ -133,3 +133,88 @@ def test_user_cannot_delete_product(client):
     )
 
     assert response.status_code == 403
+
+
+def test_get_nonexistent_product(client):
+
+    admin_token = create_user_and_login(client, role="ADMIN")
+
+    response = client.get(
+        "/products/999999", headers={"Authorization": f"Bearer {admin_token}"}
+    )
+
+    assert response.status_code == 404
+
+    data = response.get_json()
+
+    assert "error" in data
+
+
+def test_update_nonexistent_product(client):
+
+    admin_token = create_user_and_login(client, role="ADMIN")
+
+    response = client.get(
+        "/products/99999",
+        json={"name": "Novo nome"},
+        headers={"Authorization": f"Bearer {admin_token}"},
+    )
+
+    assert response.status_code == 404
+
+
+def test_delete_nonexistent_product(client):
+
+    admin_token = create_user_and_login(client, role="ADMIN")
+
+    response = client.get(
+        "/products/99999", headers={"Authorization": f"Bearer {admin_token}"}
+    )
+
+    assert response.status_code == 404
+
+
+def test_create_product_without_token(client):
+
+    response = client.post(
+        "/products", json={"name": "Camisa nike", "price": 149.99, "stock": 10}
+    )
+
+    assert response.status_code == 401
+
+
+def test_create_product_invalid_token(client):
+
+    response = client.post(
+        "/products",
+        json={"name": "Novo nome", "price": 99, "stock": 10},
+        headers={"Authorization": "Bearer invalid_token"},
+    )
+
+    assert response.status_code == 422
+
+
+def test_register_duplicate_user(client):
+
+    username = "usuario_duplicado"
+
+    client.post("/auth/register", json={"username": username, "password": "12345"})
+
+    response = client.post(
+        "/auth/register", json={"username": username, "password": "12345"}
+    )
+
+    assert response.status_code == 400
+
+
+def test_login_wrong_password(client):
+
+    username = "usuario_login"
+
+    client.post("/auth/register", json={"username": username, "password": "12345"})
+
+    response = client.post(
+        "/auth/login", json={"username": username, "password": "wrong_password"}
+    )
+
+    assert response.status_code == 401

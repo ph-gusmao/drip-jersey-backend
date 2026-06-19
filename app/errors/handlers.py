@@ -7,6 +7,8 @@ from app.errors.exceptions import (
     UnauthorizedError,
 )
 
+from werkzeug.exceptions import HTTPException
+
 
 def register_error_handlers(app):
 
@@ -29,6 +31,11 @@ def register_error_handlers(app):
     def handle_forbidden(error):
 
         return jsonify({"error": str(error)}), 403
+
+    @app.errorhandler(HTTPException)
+    def handle_http_exception(error):
+
+        return jsonify({"error": error.description}), error.code
 
     @app.errorhandler(Exception)
     def handle_internal_error(error):
