@@ -9,12 +9,16 @@ from app.services.product_service import (
 from flask_jwt_extended import jwt_required
 from app.decorators.admin_required import admin_required
 from app.errors.exceptions import NotFoundError, UnauthorizedError, BadRequestError
+from app.schemas.product_schema import ProductSchema
 
 
 @jwt_required()
 @admin_required()
 def create():
-    data = request.json
+
+    schema = ProductSchema()
+
+    data = schema.load(request.json)
 
     if not data:
         raise BadRequestError("Dados obrigatórios")
