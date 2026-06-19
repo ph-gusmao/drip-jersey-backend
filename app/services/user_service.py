@@ -38,7 +38,7 @@ def authenticate_user(username, password):
 
 
 def get_all_users():
-    return User.query, all()
+    return User.query.all()
 
 
 def get_user_by_id(user_id):

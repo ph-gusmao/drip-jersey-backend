@@ -35,7 +35,7 @@ def list_users():
 
 @jwt_required()
 @admin_required()
-def get_user_user_id(user_id):
+def get_user(user_id):
 
     user = get_user_by_id(user_id)
 

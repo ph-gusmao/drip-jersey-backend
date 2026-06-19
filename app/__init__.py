@@ -9,6 +9,7 @@ from app.errors.handlers import register_error_handlers
 from app.config import DevelopmentConfig
 from app.loggin_config import configure_loggin
 import os
+from app.routes.user_routes import user_bp
 
 load_dotenv()
 
@@ -25,6 +26,7 @@ def create_app():
 
     app.register_blueprint(auth_bp, url_prefix="/auth")
     app.register_blueprint(product_bp)
+    app.register_blueprint(user_bp)
 
     db.init_app(app)
     jwt.init_app(app)
