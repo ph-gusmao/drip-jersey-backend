@@ -233,3 +233,132 @@ def test_create_product_invalid_price(client):
     data = response.get_json()
 
     assert "errors" in data
+
+
+# ============================
+# VALIDAÇÕES DO PRODUCT SCHEMA
+# =============================
+
+
+def test_create_product_name_too_short(client):
+
+    token = create_user_and_login(client, role="ADMIN")
+
+    response = client.post(
+        "/products",
+        json={"name": "A", "price": 100, "stock": 10},
+        headers={"Authorization": f"Bearer {token}"},
+    )
+
+    assert response.status_code == 400
+
+    data = response.get_json()
+
+    assert "errors" in data
+    assert "name" in data["errors"]
+
+
+def test_create_product_empty_name(client):
+
+    token = create_user_and_login(client, role="ADMIN")
+
+    response = client.post(
+        "/products",
+        json={
+            "name": "",
+            "price": 99,
+            "stock": 10,
+        },
+        headers={"Authorization": f"Bearer {token}"},
+    )
+
+    assert response.status_code == 400
+
+    data = response.get_json()
+
+    assert "name" in data["errors"]
+
+
+def test_create_product_negative_price(client):
+
+    token = create_user_and_login(client, role="ADMIN")
+
+    response = client.post(
+        "/products",
+        json={"name": "Camisa Arsenal", "price": -50, "stock": 10},
+        headers={"Authorization": f"Bearer {token}"},
+    )
+
+    assert response.status_code == 400
+
+    data = response.get_json()
+
+    assert "price" in data["errors"]
+
+
+def test_create_product_negative_stock(client):
+
+    token = create_user_and_login(client, role="ADMIN")
+
+    response = client.post(
+        "/products",
+        json={"name": "Camisa Arsenal", "price": 50, "stock": -1},
+        headers={"Authorization": f"Bearer {token}"},
+    )
+
+    assert response.status_code == 400
+
+    data = response.get_json()
+
+    assert "stock" in data["errors"]
+
+
+def test_create_product_invalid_price_type(client):
+
+    token = create_user_and_login(client, role="ADMIN")
+
+    response = client.post(
+        "/products",
+        json={"name": "Camisa do Palmeiras", "price": "a", "stock": 10},
+        headers={"Authorization": f"Bearer {token}"},
+    )
+
+    assert response.status_code == 400
+
+    data = response.get_json()
+
+    assert "price" in data["errors"]
+
+
+def test_create_product_invalid_stock_type(client):
+
+    token = create_user_and_login(client, role="ADMIN")
+
+    response = client.post(
+        "/products",
+        json={"name": "Camisa Sao Paulo", "price": 100, "stock": "dez"},
+        headers={"Authorization": f"Bearer {token}"},
+    )
+
+    assert response.status_code == 400
+
+    data = response.get_json()
+
+    assert "stock" in data["errors"]
+
+
+def test_create_product_missing_price(client):
+
+    token = create_user_and_login(client, role="ADMIN")
+
+    response = client.post(
+        "/products",
+        json={"name": "Camisa do Fluminense", "stock": 10},
+        headers={"Authorization": f"Bearer {token}"},
+    )
+
+    assert response.status_code == 400
+
+    data = response.get_json()
+
+    assert "price" in data["errors"]

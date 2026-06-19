@@ -9,20 +9,27 @@ from flask_jwt_extended import (
 from app.models.user_model import User
 from app.errors.exceptions import UnauthorizedError
 from app.extensions import db
+from app.schemas.register_schema import RegisterSchema
+from app.schemas.login_schema import LoginSchema
+from app.errors.exceptions import NotFoundError
 
 
 def register():
-    data = request.json
 
-    try:
-        user = create_user(data["username"], data["password"], data.get("role", "USER"))
-        return jsonify({"msg": "Usuário criado", "id": user.id}), 201
-    except Exception as e:
-        return jsonify({"error": str(e)}), 400
+    schema = RegisterSchema()
+
+    data = schema.load(request.json)
+
+    user = create_user(data["username"], data["password"], data["email"])
+
+    return jsonify({"msg": "Usuário criado", "id": user.id}), 201
 
 
 def login():
-    data = request.json
+
+    schema = LoginSchema()
+
+    data = schema.load(request.json)
 
     user = authenticate_user(data["username"], data["password"])
 
@@ -42,7 +49,7 @@ def profile():
     user = db.session.get(User, user_id)
 
     if not user:
-        return {"msg": "Usuário não encontrado"}, 404
+        raise NotFoundError("Usuário não encontrado")
 
     return {
         "id": user.id,
