@@ -29,3 +29,8 @@ def update_product(product, data):
 def delete_product(product):
     db.session.delete(product)
     db.session.commit()
+
+
+def get_paginated_products(page, per_page):
+
+    return Product.query.paginated(page=page, per_page=per_page, error_out=False)

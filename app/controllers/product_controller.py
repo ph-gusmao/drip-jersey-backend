@@ -5,6 +5,7 @@ from app.services.product_service import (
     get_product_by_id,
     update_product,
     delete_product,
+    get_paginated_products,
 )
 from flask_jwt_extended import jwt_required
 from app.decorators.admin_required import admin_required
@@ -34,6 +35,12 @@ def create():
 
 
 def list_products():
+
+    page = request.args.get("page", default=1, type=int)
+
+    per_page = request.args.get("per_page", default=10, type=int)
+
+    pagination = get_paginated_products(page, per_page)
 
     products = get_all_products()
 
