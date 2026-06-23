@@ -39,8 +39,22 @@ def list_products():
     page = request.args.get("page", default=1, type=int)
 
     per_page = request.args.get("per_page", default=10, type=int)
+    per_page = min(per_page, 50)
 
     pagination = get_paginated_products(page, per_page)
+
+    return jsonify(
+        {
+            "items": [
+                {"id": p.id, "name": p.name, "price": p.price, "stock": p.stock}
+                for p in pagination.items
+            ],
+            "page": pagination.page,
+            "pages": pagination.pages,
+            "per_page": pagination.per_page,
+            "total": pagination.total,
+        }
+    )
 
     products = get_all_products()
 
