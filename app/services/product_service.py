@@ -42,3 +42,32 @@ def get_paginated_products(page, per_page):
         "total": pagination.total,
         "per_page": pagination.per_page,
     }
+
+
+def get_filteret_products(
+    page, per_page, name=None, price=None, min_price=None, max_price=None, in_stock=None
+):
+
+    query = Product.query
+
+    # Filtro por nome
+    if name:
+        query = query.filter(Product.name.ilike(f"%{name}%"))
+
+    if min_price is not None:
+        query = query.filter(Product.price >= min_price)
+
+    if max_price is not None:
+        query = query.filter(Product.price <= max_price)
+
+    if in_stock is not None:
+        if in_stock:
+            query = query.filter(Product.stock > 0)
+        else:
+            query = query.filter(Product.stock == 0)
+
+    # Paginação no final
+
+    pagination = query.paginate(page=page, per_page=per_page, error_out=False)
+
+    return pagination
