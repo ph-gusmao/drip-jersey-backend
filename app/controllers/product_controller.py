@@ -43,6 +43,9 @@ def list_products():
 
     pagination = get_paginated_products(page, per_page)
 
+    page = max(page, 1)
+    per_page = min(max(per_page, 1), 50)
+
     return jsonify(
         {
             "items": [

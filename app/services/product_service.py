@@ -33,4 +33,12 @@ def delete_product(product):
 
 def get_paginated_products(page, per_page):
 
-    return Product.query.paginate(page=page, per_page=per_page, error_out=False)
+    pagination = Product.query.paginate(page=page, per_page=per_page, error_out=False)
+
+    return {
+        "items": pagination.items,
+        "page": pagination.page,
+        "pages": pagination.pages,
+        "total": pagination.total,
+        "per_page": pagination.per_page,
+    }
