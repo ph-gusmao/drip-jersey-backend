@@ -6,11 +6,13 @@ from app.services.product_service import (
     update_product,
     delete_product,
     get_paginated_products,
+    get_filtered_products,
 )
 from flask_jwt_extended import jwt_required
 from app.decorators.admin_required import admin_required
 from app.errors.exceptions import NotFoundError, UnauthorizedError, BadRequestError
 from app.schemas.product_schema import ProductSchema
+from app.utils.response import success_response
 
 
 @jwt_required()
@@ -39,33 +41,42 @@ def list_products():
     page = request.args.get("page", default=1, type=int)
 
     per_page = request.args.get("per_page", default=10, type=int)
-    per_page = min(per_page, 50)
 
-    pagination = get_paginated_products(page, per_page)
+    # filtros
+    name = request.args.get("name", type=str)
+    min_price = request.args.get("min_price", type=float)
+    max_price = request.args.get("max_price", type=float)
+    in_stock = request.args.get("stock", type=str)
 
+    # converter in_stock (string --> bool)
+    if in_stock is not None:
+        in_stock == in_stock.lower() == "true"
+
+    # segurança
     page = max(page, 1)
     per_page = min(max(per_page, 1), 50)
 
-    return jsonify(
-        {
-            "items": [
-                {"id": p.id, "name": p.name, "price": p.price, "stock": p.stock}
-                for p in pagination.items
-            ],
-            "page": pagination.page,
-            "pages": pagination.pages,
-            "per_page": pagination.per_page,
-            "total": pagination.total,
-        }
-    )
+    pagination = get_filtered_products(page, per_page, min_price, max_price, in_stock)
 
-    products = get_all_products()
+    data = [
+        {"id": p.id, "name": p.name, "price": p.price, "stock": p.stock}
+        for p in pagination.items
+    ]
 
-    return jsonify(
-        [
-            {"id": p.id, "name": p.name, "price": p.price, "stock": p.stock}
-            for p in products
-        ]
+    meta = {
+        "page": pagination.page,
+        "per_page": pagination.per_page,
+        "total_pages": pagination.pages,
+        "total_items": pagination.total,
+    }
+
+    return (
+        jsonify(
+            success_response(
+                data=data, meta=meta, message="products retrieved successfuly"
+            )
+        ),
+        200,
     )
 
 

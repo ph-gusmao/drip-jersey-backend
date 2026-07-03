@@ -44,7 +44,7 @@ def get_paginated_products(page, per_page):
     }
 
 
-def get_filteret_products(
+def get_filtered_products(
     page, per_page, name=None, price=None, min_price=None, max_price=None, in_stock=None
 ):
 
@@ -67,7 +67,6 @@ def get_filteret_products(
             query = query.filter(Product.stock == 0)
 
     # Paginação no final
-
     pagination = query.paginate(page=page, per_page=per_page, error_out=False)
 
     return pagination
