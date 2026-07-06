@@ -46,17 +46,24 @@ def list_products():
     name = request.args.get("name", type=str)
     min_price = request.args.get("min_price", type=float)
     max_price = request.args.get("max_price", type=float)
-    in_stock = request.args.get("stock", type=str)
+    in_stock = request.args.get("in_stock", type=str)
 
     # converter in_stock (string --> bool)
     if in_stock is not None:
-        in_stock == in_stock.lower() == "true"
+        in_stock = in_stock.lower() == "true"
 
     # segurança
     page = max(page, 1)
     per_page = min(max(per_page, 1), 50)
 
-    pagination = get_filtered_products(page, per_page, min_price, max_price, in_stock)
+    pagination = get_filtered_products(
+        page=page,
+        name=name,
+        per_page=per_page,
+        min_price=min_price,
+        max_price=max_price,
+        in_stock=in_stock,
+    )
 
     data = [
         {"id": p.id, "name": p.name, "price": p.price, "stock": p.stock}
@@ -73,7 +80,7 @@ def list_products():
     return (
         jsonify(
             success_response(
-                data=data, meta=meta, message="products retrieved successfuly"
+                data=data, meta=meta, message="filtered products retrieved successfuly"
             )
         ),
         200,

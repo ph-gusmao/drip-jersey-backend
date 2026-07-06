@@ -5,4 +5,4 @@ class Product(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(120), nullable=False)
     price = db.Column(db.Float, nullable=False)
-    stock = db.Column(db.String, default=0)
+    stock = db.Column(db.Integer, default=0, nullable=False)
