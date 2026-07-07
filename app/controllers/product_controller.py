@@ -38,6 +38,9 @@ def create():
 
 def list_products():
 
+    sort = request.args.get("sort", default="id", type=str)
+    order = request.args.get("order", default="asc", type=str)
+
     page = request.args.get("page", default=1, type=int)
 
     per_page = request.args.get("per_page", default=10, type=int)
@@ -63,6 +66,8 @@ def list_products():
         min_price=min_price,
         max_price=max_price,
         in_stock=in_stock,
+        sort=sort,
+        order=order,
     )
 
     data = [

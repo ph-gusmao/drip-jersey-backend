@@ -1,6 +1,13 @@
 from app.models.product_model import Product
 from app.extensions import db
 
+SORT_FIELDS = {
+    "name": Product.name,
+    "price": Product.price,
+    "stock": Product.stock,
+    "id": Product.id,
+}
+
 
 def create_product(name, price, stock):
     product = Product(name=name, price=price, stock=stock)
@@ -45,7 +52,15 @@ def get_paginated_products(page, per_page):
 
 
 def get_filtered_products(
-    page, per_page, name=None, price=None, min_price=None, max_price=None, in_stock=None
+    page,
+    per_page,
+    name=None,
+    price=None,
+    min_price=None,
+    max_price=None,
+    in_stock=None,
+    sort="id",
+    order="asc",
 ):
 
     query = Product.query
@@ -65,6 +80,15 @@ def get_filtered_products(
             query = query.filter(Product.stock > 0)
         else:
             query = query.filter(Product.stock == 0)
+
+    column = SORT_FIELDS.get(sort)
+
+    if column:
+
+        if order.lower() == "desc":
+            query = query.order_by(column.desc())
+        else:
+            query = query.order_by(column.asc())
 
     # Paginação no final
     pagination = query.paginate(page=page, per_page=per_page, error_out=False)
