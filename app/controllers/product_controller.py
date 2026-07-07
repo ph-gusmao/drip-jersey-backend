@@ -1,36 +1,33 @@
 from flask import request, jsonify
 from app.services.product_service import (
     create_product,
-    get_all_products,
     get_product_by_id,
     update_product,
     delete_product,
-    get_paginated_products,
     get_filtered_products,
 )
 from flask_jwt_extended import jwt_required
 from app.decorators.admin_required import admin_required
 from app.errors.exceptions import NotFoundError, UnauthorizedError, BadRequestError
-from app.schemas.product_schema import ProductSchema
+from app.schemas.product_schema import product_schema, products_schema
 from app.utils.response import success_response
+from marshmallow import ValidationError
 
 
 @jwt_required()
 @admin_required()
 def create():
 
-    schema = ProductSchema()
-
-    data = schema.load(request.json)
+    data = product_schema.load(request.json)
 
     product = create_product(data["name"], data["price"], data["stock"])
 
     return (
         jsonify(
-            {
-                "id": product.id,
-                "name": product.name,
-            }
+            success_response(
+                data=products_schema.dump(product),
+                message="Product created successfully",
+            )
         ),
         201,
     )
@@ -70,10 +67,9 @@ def list_products():
         order=order,
     )
 
-    data = [
-        {"id": p.id, "name": p.name, "price": p.price, "stock": p.stock}
-        for p in pagination.items
-    ]
+    data = [...]
+
+    data = product_schema.dump(pagination.items)
 
     meta = {
         "page": pagination.page,
@@ -99,21 +95,7 @@ def list_product_by_id(product_id):
     if not product:
         raise NotFoundError("Produto não encontrado")
 
-    return (
-        jsonify(
-            {
-                "id": product.id,
-                "name": product.name,
-                "price": product.price,
-                "stock": product.stock,
-            }
-        ),
-        200,
-    )
-
-
-def create_protected():
-    return create()
+    return jsonify((success_response(data=product_schema.dump(product)))), 200
 
 
 @jwt_required()
@@ -139,4 +121,4 @@ def delete(product_id):
 
     delete_product(product)
 
-    return {"msg": "Produto deletado"}
+    return jsonify(success_response(message="Product deleted successfully"))

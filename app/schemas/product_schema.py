@@ -1,11 +1,17 @@
-from marshmallow import Schema, fields
+from marshmallow import Schema, fields, validate
 from marshmallow.validate import Length, Range
 
 
 class ProductSchema(Schema):
 
-    name = fields.String(required=True, validate=Length(min=3, max=100))
+    id = fields.Int(dump_only=True)
 
-    price = fields.Float(required=True, validate=Range(min=0.01))
+    name = fields.Str(required=True, validate=validate.length(min=3, max=100))
 
-    stock = fields.Integer(required=True, validate=Range(min=0))
+    price = fields.Float(required=True, validate=validate.Range(min=0.01))
+
+    stock = fields.Integer(required=True, validate=validate.Range(min=0))
+
+
+product_schema = ProductSchema()
+products_schema = ProductSchema(many=True)
